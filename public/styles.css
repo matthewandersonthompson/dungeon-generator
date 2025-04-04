@@ -1,0 +1,195 @@
+/* Base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+  }
+  
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  main {
+    padding: 1rem;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  
+  footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+  }
+  
+  /* Dungeon App Styles */
+  .dungeon-app {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .control-sidebar {
+    flex: 0 0 300px;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-content {
+    flex: 1;
+    min-width: 300px;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .canvas-container {
+    width: 100%;
+    overflow: auto;
+    margin-bottom: 1rem;
+  }
+  
+  canvas {
+    display: block;
+    background-color: #fff;
+    border: 1px solid #ddd;
+  }
+  
+  /* Control panel styles */
+  .control-group {
+    margin-bottom: 1rem;
+  }
+  
+  .control-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .control-group input[type="number"],
+  .control-group input[type="text"],
+  .control-group input[type="range"],
+  .control-group input[type="color"],
+  .control-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkbox-group input {
+    margin-right: 0.5rem;
+  }
+  
+  .checkbox-group label {
+    margin-bottom: 0;
+  }
+  
+  .slider-value {
+    display: inline-block;
+    margin-left: 0.5rem;
+    min-width: 30px;
+  }
+  
+  .button-container {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }
+  
+  .generate-button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    background-color: #4caf50;
+  }
+  
+  .generate-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Layer preview styles */
+  .layer-preview-container {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+    width: 100%;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+  }
+  
+  .layer-preview-container.collapsed {
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+  
+  .layer-preview-canvas {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .layer-control-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .layer-control {
+    flex: 1 0 200px;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+  
+  .layer-control h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Export section */
+  .export-container {
+    margin-top: 1rem;
+    text-align: center;
+  }
