@@ -1,92 +1,96 @@
-# Dungeon Generator
+Dungeon Generator
+=================
 
-## Overview
-The Dungeon Generator is a project designed to create procedurally generated dungeons for games and simulations. It utilizes various algorithms and techniques to generate rooms, corridors, and features, providing a rich and dynamic environment for players to explore.
+The Dungeon Generator is a TypeScript-based procedural dungeon creation tool that
+generates random dungeon layouts with multiple room types, corridors, doors, and additional
+features. The project has evolved to improve both the algorithmic generation of rooms and
+the visual rendering of the dungeon.
 
-## Features
-- **Dungeon Generation**: Generate complex dungeons with rooms, corridors, and features.
-- **Customizable Parameters**: Adjust parameters such as dungeon size and room count to create unique layouts.
-- **Rendering**: Visualize the generated dungeon using HTML5 canvas with multiple rendering layers.
-- **User Interface**: Interactive controls for adjusting generation settings and previewing the dungeon.
+Project Structure
+-----------------
+Below is an example directory tree for the project:
 
-## Project Structure
-```
-dungeon-generator
-├── src
-│   ├── core
-│   │   ├── Grid.ts
-│   │   ├── Random.ts
-│   │   ├── Vector2D.ts
+dungeon-generator/
+├── src/
+│   ├── core/
+│   │   ├── Types.ts
 │   │   ├── Geometry.ts
-│   │   └── Types.ts
-│   ├── generator
-│   │   ├── DungeonParams.ts
+│   │   └── Grid.ts
+│   ├── generator/
 │   │   ├── RoomGenerator.ts
 │   │   ├── CorridorGenerator.ts
-│   │   ├── DoorGenerator.ts
-│   │   ├── FeatureGenerator.ts
-│   │   └── DungeonGenerator.ts
-│   ├── renderer
-│   │   ├── BaseRenderer.ts
+│   │   └── DoorGenerator.ts
+│   ├── renderer/
 │   │   ├── CanvasRenderer.ts
-│   │   ├── LayerManager.ts
-│   │   ├── TextureGenerator.ts
-│   │   └── layers
-│   │       ├── GridLayer.ts
-│   │       ├── RocksLayer.ts
-│   │       ├── CracksLayer.ts
-│   │       ├── MaskLayer.ts
-│   │       ├── WallLayer.ts
-│   │       ├── FeatureLayer.ts
-│   │       ├── DoorLayer.ts
-│   │       └── LabelLayer.ts
-│   ├── ui
-│   │   ├── ControlPanel.ts
-│   │   ├── LayerPreview.ts
-│   │   ├── PreviewCanvas.ts
-│   │   └── ExportUtils.ts
-│   ├── utils
-│   │   ├── DelaunayTriangulation.ts
-│   │   ├── MinimumSpanningTree.ts
-│   │   ├── PathFinding.ts
-│   │   └── CellularAutomata.ts
-│   └── index.ts
-├── public
-│   ├── index.html
-│   └── styles.css
-├── tests
-│   ├── TextureGenerator.test.ts
-│   ├── RoomGenerator.test.ts
-│   ├── generator.test.ts
-│   └── utils.test.ts
+│   │   └── LayerManager.ts
+│   └── index.html
 ├── package.json
 ├── tsconfig.json
-└── README.md
-```
+└── README.txt
 
-## Installation
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/dungeon-generator.git
-   ```
-2. Navigate to the project directory:
-   ```
-   cd dungeon-generator
-   ```
-3. Install dependencies:
-   ```
-   npm install
-   ```
+Overview
+--------
+This project generates dungeon maps using several core components:
 
-## Usage
-1. Run the application:
-   ```
-   npm start
-   ```
-2. Open your browser and navigate to `http://localhost:3000` to view the dungeon generator.
+  - RoomGenerator:
+      Creates rooms of various types (rectangular, circular, L-shaped, cave-like)
+      and clusters them to mimic a building-like layout.
+  - CorridorGenerator:
+      Connects rooms using a Minimum Spanning Tree (MST) approach to ensure exactly
+      one corridor per room connection (with optional loop creation).
+  - CanvasRenderer:
+      Draws the generated dungeon onto an HTML5 canvas. It includes specialized rendering
+      for:
+        * Circular Rooms: Smooth curves with proper corridor gap handling.
+        * Irregular Rooms: For non-square or L-shaped rooms, a special diagonal (45° chamfer)
+          overlay is rendered so that interior 90° corners are removed, giving a cleaner,
+          continuous appearance.
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
+What Has Been Done
+------------------
+1. Room Generation Improvements:
+   - Room Clustering: Rooms are now placed closer together to simulate a building-like structure.
+   - Multiple Room Types: The generator supports rectangular, circular, L-shaped, and cave-like rooms.
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+What I WANT to do 
+------------------------
+1. Add Smooth curved circular rooms
+2. Add voroni-like rock borders around the walls of rooms and hallways
+3. Add 45 degree walls on cell corners of abnormally shaped rooms
+4. Add fun minor cosmetics like cracks in walls, rocks on the floor, water, etc.
+5. Add simple UI dropdown options on the side for easy customization
+
+
+
+Setup & Usage
+-------------
+Installation:
+  1. Clone the Repository:
+       git clone https://github.com/matthewandersonthompson/dungeon-generator.git
+       cd dungeon-generator
+
+  2. Install Dependencies:
+       npm install
+
+Build and Run:
+  1. Build the Project:
+       npm run build
+       (This compiles the TypeScript files.)
+
+  2. Run the Application:
+       Open the generated HTML file in your browser or run your development server to view the dungeon.
+
+Configuration:
+  - Room and Corridor Settings:
+       Modify parameters in the generator configuration files to adjust room density, corridor width,
+       and the chance of special room types.
+  - Renderer Options:
+       Adjust visual settings (e.g., cell size, padding, wall colors) in the CanvasRenderer.ts file.
+
+License
+-------
+  MIT License
+
+Acknowledgements
+----------------
+  Special thanks to the creators of similar dungeon generator projects who inspired me (gridmapper, watabou, etc.)
