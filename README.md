@@ -6,28 +6,6 @@ generates random dungeon layouts with multiple room types, corridors, doors, and
 features. The project has evolved to improve both the algorithmic generation of rooms and
 the visual rendering of the dungeon.
 
-Project Structure
------------------
-Below is an example directory tree for the project:
-
-dungeon-generator/
-├── src/
-│   ├── core/
-│   │   ├── Types.ts
-│   │   ├── Geometry.ts
-│   │   └── Grid.ts
-│   ├── generator/
-│   │   ├── RoomGenerator.ts
-│   │   ├── CorridorGenerator.ts
-│   │   └── DoorGenerator.ts
-│   ├── renderer/
-│   │   ├── CanvasRenderer.ts
-│   │   └── LayerManager.ts
-│   └── index.html
-├── package.json
-├── tsconfig.json
-└── README.txt
-
 Overview
 --------
 This project generates dungeon maps using several core components:
@@ -39,12 +17,7 @@ This project generates dungeon maps using several core components:
       Connects rooms using a Minimum Spanning Tree (MST) approach to ensure exactly
       one corridor per room connection (with optional loop creation).
   - CanvasRenderer:
-      Draws the generated dungeon onto an HTML5 canvas. It includes specialized rendering
-      for:
-        * Circular Rooms: Smooth curves with proper corridor gap handling.
-        * Irregular Rooms: For non-square or L-shaped rooms, a special diagonal (45° chamfer)
-          overlay is rendered so that interior 90° corners are removed, giving a cleaner,
-          continuous appearance.
+      Draws the generated dungeon onto an HTML5 canvas. 
 
 What Has Been Done
 ------------------
@@ -59,7 +32,6 @@ What I WANT to do
 3. Add 45 degree walls on cell corners of abnormally shaped rooms
 4. Add fun minor cosmetics like cracks in walls, rocks on the floor, water, etc.
 5. Add simple UI dropdown options on the side for easy customization
-
 
 
 Setup & Usage
