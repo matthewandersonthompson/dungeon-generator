@@ -1,18 +1,7 @@
 import { Random } from '../core/Random';
 import { LayerOptions } from '../core/Types';
 
-/**
- * Interface for texture generators
- */
 export interface TextureGenerator {
-  /**
-   * Generate a texture on the provided canvas context
-   * @param ctx Canvas context to draw on
-   * @param width Width of the canvas
-   * @param height Height of the canvas
-   * @param random Random number generator
-   * @param options Layer options
-   */
   generate(
     ctx: CanvasRenderingContext2D, 
     width: number, 
@@ -22,19 +11,15 @@ export interface TextureGenerator {
   ): void;
 }
 
-/**
- * Grid texture generator
- */
 export class GridTextureGenerator implements TextureGenerator {
   generate(ctx: CanvasRenderingContext2D, width: number, height: number, random: Random, options: LayerOptions) {
-    const { scale, color, opacity } = options;
+    const { scale, opacity } = options;
     
     ctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
     ctx.lineWidth = 0.5;
     
     const gridSize = 20 * scale;
     
-    // Draw vertical lines
     for (let x = 0; x <= width; x += gridSize) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -42,7 +27,6 @@ export class GridTextureGenerator implements TextureGenerator {
       ctx.stroke();
     }
     
-    // Draw horizontal lines
     for (let y = 0; y <= height; y += gridSize) {
       ctx.beginPath();
       ctx.moveTo(0, y);
@@ -52,16 +36,12 @@ export class GridTextureGenerator implements TextureGenerator {
   }
 }
 
-/**
- * Rock debris texture generator
- */
 export class RocksTextureGenerator implements TextureGenerator {
   generate(ctx: CanvasRenderingContext2D, width: number, height: number, random: Random, options: LayerOptions) {
-    const { density, color, opacity, scale } = options;
+    const { density, opacity, scale } = options;
     
     ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
     
-    // Number of rocks based on density and canvas size
     const rockCount = Math.floor((width * height * density) / 3000);
     
     for (let i = 0; i < rockCount; i++) {
@@ -73,10 +53,9 @@ export class RocksTextureGenerator implements TextureGenerator {
     }
   }
   
-  drawRock(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, random: Random) {
+  private drawRock(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, random: Random) {
     ctx.beginPath();
     
-    // Create irregular rock shape
     const points = 5 + Math.floor(random.next() * 3);
     const angleStep = (Math.PI * 2) / points;
     
@@ -86,11 +65,7 @@ export class RocksTextureGenerator implements TextureGenerator {
       const px = x + Math.cos(angle) * radius;
       const py = y + Math.sin(angle) * radius;
       
-      if (i === 0) {
-        ctx.moveTo(px, py);
-      } else {
-        ctx.lineTo(px, py);
-      }
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
     
     ctx.closePath();
@@ -98,12 +73,9 @@ export class RocksTextureGenerator implements TextureGenerator {
   }
 }
 
-/**
- * Cracks texture generator
- */
 export class CracksTextureGenerator implements TextureGenerator {
   generate(ctx: CanvasRenderingContext2D, width: number, height: number, random: Random, options: LayerOptions) {
-    const { density, color, opacity, scale } = options;
+    const { density, opacity, scale } = options;
     
     ctx.strokeStyle = `rgba(0, 0, 0, ${opacity})`;
     ctx.lineWidth = 0.8 * scale;
@@ -119,7 +91,7 @@ export class CracksTextureGenerator implements TextureGenerator {
     }
   }
   
-  drawCrack(ctx: CanvasRenderingContext2D, startX: number, startY: number, length: number, random: Random) {
+  private drawCrack(ctx: CanvasRenderingContext2D, startX: number, startY: number, length: number, random: Random) {
     ctx.beginPath();
     ctx.moveTo(startX, startY);
     
@@ -131,7 +103,6 @@ export class CracksTextureGenerator implements TextureGenerator {
     const segLength = length / segments;
     
     for (let i = 0; i < segments; i++) {
-      // Adjust angle slightly for each segment
       angle += (random.next() - 0.5) * 0.8;
       
       x += Math.cos(angle) * segLength;
@@ -144,16 +115,12 @@ export class CracksTextureGenerator implements TextureGenerator {
   }
 }
 
-/**
- * Dots texture generator
- */
 export class DotsTextureGenerator implements TextureGenerator {
   generate(ctx: CanvasRenderingContext2D, width: number, height: number, random: Random, options: LayerOptions) {
-    const { density, color, opacity, scale } = options;
+    const { density, opacity, scale } = options;
     
     ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
     
-    // Number of dots based on density and canvas size
     const dotCount = Math.floor((width * height * density) / 1000);
     
     for (let i = 0; i < dotCount; i++) {
@@ -168,22 +135,20 @@ export class DotsTextureGenerator implements TextureGenerator {
   }
 }
 
-/**
- * Factory for creating texture generators
- */
 export class TextureGeneratorFactory {
   static createGenerator(type: string): TextureGenerator {
-    switch (type.toLowerCase()) {
-      case 'grid':
-        return new GridTextureGenerator();
-      case 'rocks':
-        return new RocksTextureGenerator();
-      case 'cracks':
-        return new CracksTextureGenerator();
-      case 'dots':
-        return new DotsTextureGenerator();
-      default:
-        throw new Error(`Unknown texture generator type: ${type}`);
+    const generators: Record<string, () => TextureGenerator> = {
+      grid: () => new GridTextureGenerator(),
+      rocks: () => new RocksTextureGenerator(),
+      cracks: () => new CracksTextureGenerator(),
+      dots: () => new DotsTextureGenerator()
+    };
+    
+    const generator = generators[type.toLowerCase()];
+    if (!generator) {
+      throw new Error(`Unknown texture generator type: ${type}`);
     }
+    
+    return generator();
   }
 }

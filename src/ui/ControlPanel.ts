@@ -1,25 +1,16 @@
 import { DungeonParams } from '../core/Types';
 import { DungeonParamsBuilder } from '../generator/DungeonParams';
 
-/**
- * UI control panel for dungeon generation
- */
 export class ControlPanel {
   private container: HTMLElement;
   private onGenerateCallback: () => void;
   private controls: Map<string, HTMLInputElement | HTMLSelectElement> = new Map();
   private presets: Map<string, DungeonParams> = new Map();
   
-  /**
-   * Create a new control panel
-   * @param container HTML element to place the control panel in
-   * @param onGenerate Callback for when the generate button is clicked
-   */
   constructor(container: HTMLElement, onGenerate: () => void) {
     this.container = container;
     this.onGenerateCallback = onGenerate;
     
-    // Set up presets
     this.presets.set('default', DungeonParamsBuilder.createDefault());
     this.presets.set('small', DungeonParamsBuilder.createSmall());
     this.presets.set('large', DungeonParamsBuilder.createLarge());
@@ -31,45 +22,33 @@ export class ControlPanel {
     this.initUI();
   }
   
-  /**
-   * Initialize the UI
-   */
   private initUI(): void {
-    // Create preset dropdown
     this.createPresetSelector();
     
-    // Create number inputs
     this.createNumberInput('width', 'Width:', 10, 100, 1, 50);
     this.createNumberInput('height', 'Height:', 10, 100, 1, 50);
     this.createNumberInput('numRooms', 'Rooms:', 1, 50, 1, 15);
     
-    // Create sliders
     this.createSlider('roomDensity', 'Room Density:', 0, 1, 0.05, 0.5);
     this.createSlider('roomSizeVariation', 'Size Variation:', 0, 1, 0.05, 0.5);
     this.createSlider('specialRoomChance', 'Special Rooms:', 0, 1, 0.05, 0.2);
     this.createSlider('featureDensity', 'Feature Density:', 0, 1, 0.05, 0.5);
     
-    // Create number inputs
     this.createNumberInput('corridorWidth', 'Corridor Width:', 1, 3, 1, 1);
     
-    // Create checkbox
     this.createCheckbox('createLoops', 'Create Loops', true);
     
-    // Create slider (only shown when loops are enabled)
     this.createSlider('loopChance', 'Loop Chance:', 0, 1, 0.05, 0.3);
     
-    // Create hallway style dropdown
     this.createDropdown('hallwayStyle', 'Hallway Style:', [
       { value: 'straight', label: 'Straight' },
       { value: 'bendy', label: 'Bendy' },
       { value: 'organic', label: 'Organic' }
     ], 'bendy');
     
-    // Create door controls
     this.createSlider('doorFrequency', 'Door Frequency:', 0, 1, 0.05, 0.8);
     this.createSlider('secretDoorChance', 'Secret Door Chance:', 0, 1, 0.05, 0.1);
     
-    // Create theme dropdown
     this.createDropdown('theme', 'Theme:', [
       { value: 'standard', label: 'Standard' },
       { value: 'cave', label: 'Cave' },
@@ -78,19 +57,13 @@ export class ControlPanel {
       { value: 'loopy', label: 'Loopy' }
     ], 'standard');
     
-    // Create seed input
     this.createTextInput('seed', 'Seed:', '');
     
-    // Create the generate button
     this.createGenerateButton();
     
-    // Set up event handlers for control dependencies
     this.setupEventHandlers();
   }
   
-  /**
-   * Create a preset selector
-   */
   private createPresetSelector(): void {
     const container = document.createElement('div');
     container.className = 'control-group';
@@ -101,7 +74,6 @@ export class ControlPanel {
     const select = document.createElement('select');
     select.id = 'preset-selector';
     
-    // Add preset options
     const presets = [
       { value: 'default', label: 'Default' },
       { value: 'small', label: 'Small Dungeon' },
@@ -120,7 +92,6 @@ export class ControlPanel {
       select.appendChild(option);
     }
     
-    // Set up event handler
     select.addEventListener('change', () => {
       const presetName = select.value;
       
@@ -137,9 +108,6 @@ export class ControlPanel {
     this.container.appendChild(container);
   }
   
-  /**
-   * Create a number input
-   */
   private createNumberInput(
     id: string, 
     label: string, 
@@ -170,9 +138,6 @@ export class ControlPanel {
     this.controls.set(id, input);
   }
   
-  /**
-   * Create a slider input
-   */
   private createSlider(
     id: string, 
     label: string, 
@@ -200,7 +165,6 @@ export class ControlPanel {
     valueDisplay.className = 'slider-value';
     valueDisplay.textContent = defaultValue.toString();
     
-    // Update the display value when the slider changes
     input.addEventListener('input', () => {
       valueDisplay.textContent = input.value;
     });
@@ -213,9 +177,6 @@ export class ControlPanel {
     this.controls.set(id, input);
   }
   
-  /**
-   * Create a checkbox input
-   */
   private createCheckbox(id: string, label: string, defaultChecked: boolean): void {
     const container = document.createElement('div');
     container.className = 'control-group checkbox-group';
@@ -236,9 +197,6 @@ export class ControlPanel {
     this.controls.set(id, input);
   }
   
-  /**
-   * Create a dropdown select
-   */
   private createDropdown(
     id: string, 
     label: string, 
@@ -271,9 +229,6 @@ export class ControlPanel {
     this.controls.set(id, select);
   }
   
-  /**
-   * Create a text input
-   */
   private createTextInput(id: string, label: string, defaultValue: string): void {
     const container = document.createElement('div');
     container.className = 'control-group';
@@ -294,21 +249,16 @@ export class ControlPanel {
     this.controls.set(id, input);
   }
   
-  /**
-   * Create the generate button
-   */
   private createGenerateButton(): void {
     const button = document.createElement('button');
     button.textContent = 'Generate Dungeon';
     button.className = 'generate-button';
     button.addEventListener('click', () => {
-      // Select "Custom" in the preset dropdown
       const presetSelector = document.getElementById('preset-selector') as HTMLSelectElement;
       if (presetSelector) {
         presetSelector.value = 'custom';
       }
       
-      // Trigger the generate callback
       this.onGenerateCallback();
     });
     
@@ -319,19 +269,13 @@ export class ControlPanel {
     this.container.appendChild(container);
   }
   
-  /**
-   * Set up event handlers for control dependencies
-   */
   private setupEventHandlers(): void {
-    // Show/hide loop chance based on create loops checkbox
     const createLoopsCheckbox = this.controls.get('createLoops') as HTMLInputElement;
     const loopChanceContainer = document.getElementById('loopChance')?.parentElement;
     
     if (createLoopsCheckbox && loopChanceContainer) {
-      // Set initial state
       loopChanceContainer.style.display = createLoopsCheckbox.checked ? 'block' : 'none';
       
-      // Add change handler
       createLoopsCheckbox.addEventListener('change', () => {
         if (loopChanceContainer) {
           loopChanceContainer.style.display = createLoopsCheckbox.checked ? 'block' : 'none';
@@ -340,38 +284,28 @@ export class ControlPanel {
     }
   }
   
-  /**
-   * Get the current parameter values from the controls
-   * @returns DungeonParams object with current values
-   */
   getParams(): DungeonParams {
     const params: Partial<DungeonParams> = {};
     
-    // Get number input values
     for (const param of ['width', 'height', 'numRooms', 'corridorWidth']) {
       const control = this.controls.get(param) as HTMLInputElement;
       if (control) {
-        // Use type assertion to avoid type errors
         (params as any)[param] = parseInt(control.value, 10);
       }
     }
     
-    // Get slider values
     for (const param of ['roomDensity', 'roomSizeVariation', 'specialRoomChance', 'featureDensity', 'loopChance', 'doorFrequency', 'secretDoorChance']) {
       const control = this.controls.get(param) as HTMLInputElement;
       if (control) {
-        // Use type assertion to avoid type errors
         (params as any)[param] = parseFloat(control.value);
       }
     }
     
-    // Get checkbox values
     const createLoopsControl = this.controls.get('createLoops') as HTMLInputElement;
     if (createLoopsControl) {
       params.createLoops = createLoopsControl.checked;
     }
     
-    // Get dropdown values
     const hallwayStyleControl = this.controls.get('hallwayStyle') as HTMLSelectElement;
     if (hallwayStyleControl) {
       params.hallwayStyle = hallwayStyleControl.value as 'straight' | 'bendy' | 'organic';
@@ -382,22 +316,15 @@ export class ControlPanel {
       params.theme = themeControl.value;
     }
     
-    // Get seed
     const seedControl = this.controls.get('seed') as HTMLInputElement;
     if (seedControl && seedControl.value.trim() !== '') {
       params.seed = seedControl.value.trim();
     }
     
-    // Validate and normalize
     return DungeonParamsBuilder.validateAndNormalize(params);
   }
   
-  /**
-   * Set parameters in the controls
-   * @param params DungeonParams to set
-   */
   setParams(params: DungeonParams): void {
-    // Set number input values
     for (const param of ['width', 'height', 'numRooms', 'corridorWidth']) {
       const control = this.controls.get(param) as HTMLInputElement;
       if (control && params[param as keyof DungeonParams] != null) {
@@ -405,13 +332,11 @@ export class ControlPanel {
       }
     }
     
-    // Set slider values
     for (const param of ['roomDensity', 'roomSizeVariation', 'specialRoomChance', 'featureDensity', 'loopChance', 'doorFrequency', 'secretDoorChance']) {
       const control = this.controls.get(param) as HTMLInputElement;
       if (control && params[param as keyof DungeonParams] != null) {
         control.value = String(params[param as keyof DungeonParams]);
         
-        // Update display value
         const valueDisplay = control.nextElementSibling as HTMLElement;
         if (valueDisplay && valueDisplay.className === 'slider-value') {
           valueDisplay.textContent = control.value;
@@ -419,19 +344,16 @@ export class ControlPanel {
       }
     }
     
-    // Set checkbox values
     const createLoopsControl = this.controls.get('createLoops') as HTMLInputElement;
     if (createLoopsControl && params.createLoops !== undefined) {
       createLoopsControl.checked = params.createLoops;
       
-      // Update dependent controls
       const loopChanceContainer = document.getElementById('loopChance')?.parentElement;
       if (loopChanceContainer) {
         loopChanceContainer.style.display = createLoopsControl.checked ? 'block' : 'none';
       }
     }
     
-    // Set dropdown values
     const hallwayStyleControl = this.controls.get('hallwayStyle') as HTMLSelectElement;
     if (hallwayStyleControl && params.hallwayStyle !== undefined) {
       hallwayStyleControl.value = params.hallwayStyle;
@@ -441,7 +363,5 @@ export class ControlPanel {
     if (themeControl && params.theme !== undefined) {
       themeControl.value = params.theme;
     }
-    
-    // Don't set the seed from presets to allow for random generation
   }
 }

@@ -2,9 +2,6 @@ import { LayerOptions } from '../core/Types';
 import { LayerManager } from '../renderer/LayerManager';
 import { Random } from '../core/Random';
 
-/**
- * UI component for previewing texture layers
- */
 export class LayerPreviewPanel {
   private container: HTMLElement;
   private previewCanvas: HTMLCanvasElement;
@@ -12,12 +9,6 @@ export class LayerPreviewPanel {
   private layerManager: LayerManager;
   public element: HTMLElement;
   
-  /**
-   * Create a new layer preview panel
-   * @param container HTML element to place the preview in
-   * @param width Canvas width
-   * @param height Canvas height
-   */
   constructor(container: HTMLElement, width: number, height: number) {
     this.container = container;
     this.element = container;
@@ -25,7 +16,6 @@ export class LayerPreviewPanel {
     this.previewCanvas.width = width;
     this.previewCanvas.height = height;
     
-    // Create a layer manager with a random seed
     this.layerManager = new LayerManager(width, height, Math.random().toString());
     
     this.layerControls = new Map();
@@ -33,26 +23,19 @@ export class LayerPreviewPanel {
     this.initializeUI();
   }
   
-  /**
-   * Initialize the UI
-   */
   private initializeUI(): void {
-    // Create canvas container
     const canvasContainer = document.createElement('div');
     canvasContainer.className = 'layer-preview-canvas';
     canvasContainer.appendChild(this.previewCanvas);
     this.container.appendChild(canvasContainer);
     
-    // Create panel title
     const title = document.createElement('h2');
     title.textContent = 'Texture Layer Preview';
     this.container.appendChild(title);
     
-    // Create layer control panel
     const controlPanel = document.createElement('div');
     controlPanel.className = 'layer-control-panel';
     
-    // Add layer controls
     this.addLayerControl(controlPanel, 'grid', 'Grid Layer');
     this.addLayerControl(controlPanel, 'rocks', 'Rock Debris');
     this.addLayerControl(controlPanel, 'cracks', 'Cracks');
@@ -60,11 +43,9 @@ export class LayerPreviewPanel {
     
     this.container.appendChild(controlPanel);
     
-    // Add refresh button
     const refreshButton = document.createElement('button');
     refreshButton.textContent = 'Refresh Preview';
     refreshButton.addEventListener('click', () => {
-      // Create a new layer manager with a new random seed
       this.layerManager = new LayerManager(
         this.previewCanvas.width, 
         this.previewCanvas.height, 
@@ -78,16 +59,9 @@ export class LayerPreviewPanel {
     buttonContainer.appendChild(refreshButton);
     this.container.appendChild(buttonContainer);
     
-    // Initial render
     this.updatePreview();
   }
   
-  /**
-   * Add a layer control to the panel
-   * @param panel Panel to add the control to
-   * @param layerType Type of layer
-   * @param label Label for the control
-   */
   private addLayerControl(panel: HTMLElement, layerType: string, label: string): void {
     const control = new LayerControlUI(layerType, label, {
       opacity: 0.2,
@@ -102,17 +76,12 @@ export class LayerPreviewPanel {
     this.layerControls.set(layerType, control);
   }
   
-  /**
-   * Update the preview canvas
-   */
   updatePreview(): void {
     const ctx = this.previewCanvas.getContext('2d')!;
     
-    // Clear canvas
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
     
-    // Generate and draw each visible layer
     for (const [layerType, control] of this.layerControls.entries()) {
       if (control.options.visible) {
         const layer = this.layerManager.generateLayer(layerType, control.options);
@@ -121,10 +90,6 @@ export class LayerPreviewPanel {
     }
   }
   
-  /**
-   * Get the current layer options
-   * @returns Map of layer types to their options
-   */
   getLayerOptions(): Record<string, LayerOptions> {
     const options: Record<string, LayerOptions> = {};
     
@@ -136,27 +101,17 @@ export class LayerPreviewPanel {
   }
 }
 
-/**
- * UI component for controlling a single layer
- */
 export class LayerControlUI {
   public element: HTMLElement;
   public options: LayerOptions;
   private changeCallbacks: Array<() => void> = [];
   
-  /**
-   * Create a new layer control
-   * @param layerType Type of layer
-   * @param label Label for the control
-   * @param defaultOptions Default layer options
-   */
   constructor(layerType: string, label: string, defaultOptions: LayerOptions) {
     this.options = {...defaultOptions};
     this.element = document.createElement('div');
     this.element.className = 'layer-control';
     this.element.dataset.layerType = layerType;
     
-    // Build UI elements
     this.buildHeader(label);
     this.buildOpacityControl();
     this.buildDensityControl();
@@ -165,36 +120,22 @@ export class LayerControlUI {
     this.buildVisibilityToggle();
   }
   
-  /**
-   * Add a change callback
-   * @param callback Function to call when the control changes
-   */
   onChange(callback: () => void): void {
     this.changeCallbacks.push(callback);
   }
   
-  /**
-   * Trigger change callbacks
-   */
   private triggerChange(): void {
     for (const callback of this.changeCallbacks) {
       callback();
     }
   }
   
-  /**
-   * Build the header element
-   * @param label Label for the control
-   */
   private buildHeader(label: string): void {
     const header = document.createElement('h3');
     header.textContent = label;
     this.element.appendChild(header);
   }
   
-  /**
-   * Build the opacity control
-   */
   private buildOpacityControl(): void {
     const container = document.createElement('div');
     container.className = 'control-group';
@@ -225,9 +166,6 @@ export class LayerControlUI {
     this.element.appendChild(container);
   }
   
-  /**
-   * Build the density control
-   */
   private buildDensityControl(): void {
     const container = document.createElement('div');
     container.className = 'control-group';
@@ -258,9 +196,6 @@ export class LayerControlUI {
     this.element.appendChild(container);
   }
   
-  /**
-   * Build the scale control
-   */
   private buildScaleControl(): void {
     const container = document.createElement('div');
     container.className = 'control-group';
@@ -291,9 +226,6 @@ export class LayerControlUI {
     this.element.appendChild(container);
   }
   
-  /**
-   * Build the color control
-   */
   private buildColorControl(): void {
     const container = document.createElement('div');
     container.className = 'control-group';
@@ -315,9 +247,6 @@ export class LayerControlUI {
     this.element.appendChild(container);
   }
   
-  /**
-   * Build the visibility toggle
-   */
   private buildVisibilityToggle(): void {
     const container = document.createElement('div');
     container.className = 'control-group';

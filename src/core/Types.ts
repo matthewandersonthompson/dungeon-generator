@@ -1,6 +1,3 @@
-/**
- * Enumeration of cell types in the dungeon
- */
 export enum CellType {
   EMPTY = 0,
   WALL = 1,
@@ -20,9 +17,6 @@ export enum CellType {
   MONSTER = 15
 }
 
-/**
- * Enumeration of room types
- */
 export enum RoomType {
   RECTANGULAR = 'rectangular',
   CIRCULAR = 'circular',
@@ -30,17 +24,11 @@ export enum RoomType {
   CAVE = 'cave'
 }
 
-/**
- * Interface for a point in 2D space
- */
 export interface Point {
   x: number;
   y: number;
 }
 
-/**
- * Interface for a room in the dungeon
- */
 export interface Room {
   id: number;
   type: RoomType;
@@ -53,13 +41,9 @@ export interface Room {
   cells?: Point[];
   features: Feature[];
   description?: string;
-  // Optional property for smooth curved walls in circular rooms
   borderPoints?: Point[];
 }
 
-/**
- * Interface for a corridor connecting two rooms
- */
 export interface Corridor {
   from: number;
   to: number;
@@ -69,19 +53,13 @@ export interface Corridor {
   width: number;
 }
 
-/**
- * Interface for a door in the dungeon
- */
 export interface Door {
   x: number;
   y: number;
   type: CellType.DOOR | CellType.SECRET_DOOR;
-  connects: [number, number]; // Room IDs
+  connects: [number, number];
 }
 
-/**
- * Interface for a feature in a room
- */
 export interface Feature {
   x: number;
   y: number;
@@ -90,9 +68,6 @@ export interface Feature {
   roomId: number;
 }
 
-/**
- * Interface for the dungeon
- */
 export interface Dungeon {
   width: number;
   height: number;
@@ -107,9 +82,6 @@ export interface Dungeon {
   theme: string;
 }
 
-/**
- * Interface for dungeon generation parameters
- */
 export interface DungeonParams {
   width: number;
   height: number;
@@ -128,9 +100,6 @@ export interface DungeonParams {
   secretDoorChance: number;
 }
 
-/**
- * Interface for layer rendering options
- */
 export interface LayerOptions {
   opacity: number;
   density: number;

@@ -1,23 +1,17 @@
 import { DungeonParams } from '../core/Types';
 
-/**
- * Default parameters for dungeon generation with methods to create and customize them
- */
 export class DungeonParamsBuilder {
-  /**
-   * Create a default set of dungeon parameters
-   */
   static createDefault(): DungeonParams {
     return {
       width: 50,
       height: 50,
       numRooms: 15,
-      roomDensity: 0.8, // Increased density for closer rooms
+      roomDensity: 0.8,
       roomSizeVariation: 0.5,
       specialRoomChance: 0.2,
       corridorWidth: 1,
-      createLoops: false, // Disable additional loop corridors to ensure one hallway per room pair
-      loopChance: 0,      // No extra loops
+      createLoops: false,
+      loopChance: 0,
       featureDensity: 0.5,
       theme: 'standard',
       hallwayStyle: 'bendy',
@@ -26,35 +20,14 @@ export class DungeonParamsBuilder {
     };
   }
 
-  /**
-   * Create a set of parameters for a small dungeon
-   */
   static createSmall(): DungeonParams {
-    return {
-      ...this.createDefault(),
-      width: 30,
-      height: 30,
-      numRooms: 5,
-      roomDensity: 0.8
-    };
+    return { ...this.createDefault(), width: 30, height: 30, numRooms: 5 };
   }
 
-  /**
-   * Create a set of parameters for a large dungeon
-   */
   static createLarge(): DungeonParams {
-    return {
-      ...this.createDefault(),
-      width: 80,
-      height: 80,
-      numRooms: 30,
-      roomDensity: 0.8
-    };
+    return { ...this.createDefault(), width: 80, height: 80, numRooms: 30 };
   }
 
-  /**
-   * Create a set of parameters for a cave-like dungeon
-   */
   static createCave(): DungeonParams {
     return {
       ...this.createDefault(),
@@ -66,9 +39,6 @@ export class DungeonParamsBuilder {
     };
   }
 
-  /**
-   * Create a set of parameters for a maze-like dungeon
-   */
   static createMaze(): DungeonParams {
     return {
       ...this.createDefault(),
@@ -81,22 +51,16 @@ export class DungeonParamsBuilder {
     };
   }
 
-  /**
-   * Create a set of parameters for a dungeon with many loops
-   */
   static createLoopy(): DungeonParams {
     return {
       ...this.createDefault(),
-      createLoops: false, // Still ensuring only one hallway per room
+      createLoops: false,
       loopChance: 0,
       hallwayStyle: 'straight',
       theme: 'loopy'
     };
   }
 
-  /**
-   * Create a set of parameters for a temple-like dungeon with many features
-   */
   static createTemple(): DungeonParams {
     return {
       ...this.createDefault(),
@@ -108,41 +72,40 @@ export class DungeonParamsBuilder {
     };
   }
 
-  /**
-   * Create a custom set of parameters by modifying the default ones
-   * @param customizer Function that takes the default parameters and returns modified ones
-   */
   static customize(customizer: (params: DungeonParams) => DungeonParams): DungeonParams {
     return customizer(this.createDefault());
   }
 
-  /**
-   * Validate and normalize dungeon parameters
-   * @param params Parameters to validate
-   * @returns Validated and normalized parameters
-   */
   static validateAndNormalize(params: Partial<DungeonParams>): DungeonParams {
+    const clamp = (value: number, min = 0, max = 1) => 
+      Math.min(max, Math.max(min, value));
+
     const defaults = this.createDefault();
     const normalized: DungeonParams = { ...defaults, ...params };
 
-    // Ensure minimum dimensions
+    // Validate dimensions and room count
     normalized.width = Math.max(10, normalized.width);
     normalized.height = Math.max(10, normalized.height);
-
-    // Ensure a reasonable room count
     const maxRooms = Math.floor((normalized.width * normalized.height) / 25);
     normalized.numRooms = Math.min(maxRooms, Math.max(1, normalized.numRooms));
 
-    // Clamp probability values between 0 and 1
-    normalized.roomDensity = Math.min(1, Math.max(0, normalized.roomDensity));
-    normalized.roomSizeVariation = Math.min(1, Math.max(0, normalized.roomSizeVariation));
-    normalized.specialRoomChance = Math.min(1, Math.max(0, normalized.specialRoomChance));
-    normalized.loopChance = Math.min(1, Math.max(0, normalized.loopChance));
-    normalized.featureDensity = Math.min(1, Math.max(0, normalized.featureDensity));
-    normalized.doorFrequency = Math.min(1, Math.max(0, normalized.doorFrequency));
-    normalized.secretDoorChance = Math.min(1, Math.max(0, normalized.secretDoorChance));
+    // Clamp probability values
+    const probabilityKeys = [
+      'roomDensity', 
+      'roomSizeVariation', 
+      'specialRoomChance', 
+      'loopChance', 
+      'featureDensity', 
+      'doorFrequency', 
+      'secretDoorChance'
+    ] as const;
 
-    // Ensure valid corridor width
+    probabilityKeys.forEach(key => {
+      const value = normalized[key];
+      normalized[key] = clamp(value as number);
+    });
+
+    // Validate corridor width
     normalized.corridorWidth = Math.max(1, Math.min(3, normalized.corridorWidth));
 
     return normalized;
