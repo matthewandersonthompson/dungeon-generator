@@ -13,14 +13,11 @@ This generator builds dungeons with:
 Current Status
 --------------
 - Rooms are clustered for a compact layout.
-- Multiple room types are generated.
+- Multiple room types are generated(weird list of stuff, but I was just messing around).
 - Corridors reliably connect rooms.
 
 Future (Epic) Goals
 -------------------
-- Smooth, curved circular room rendering.
-- Voronoi-style rock borders around walls.
-- Diagonal (45°) wall cuts for irregular rooms.
 - Cool cosmetic touches (cracks, rocks, water effects, etc.).
 - A simple UI for tweaking settings without needing to recompile code.
 
