@@ -67,12 +67,14 @@ export class DoorGenerator {
     const pointValue = grid.get(point.x, point.y) ?? CellType.EMPTY;
     const directionValue = grid.get(directionPoint.x, directionPoint.y) ?? CellType.EMPTY;
     
+    // Check if this is a valid door location (transition between floor and corridor)
     const isDoorLocation = 
       (pointValue === CellType.FLOOR && directionValue === CellType.CORRIDOR) ||
       (pointValue === CellType.CORRIDOR && directionValue === CellType.FLOOR);
 
     if (!isDoorLocation) return;
 
+    // Determine if it should be a secret door
     const doorType = this.random.nextFloat(0, 1) < this.secretDoorChance
       ? CellType.SECRET_DOOR
       : CellType.DOOR;
@@ -88,12 +90,20 @@ export class DoorGenerator {
     grid.set(point.x, point.y, doorType);
   }
 
+  /**
+   * Find potential door locations between two rooms
+   * @param roomA First room
+   * @param roomB Second room
+   * @param grid Dungeon grid
+   * @returns Array of potential door positions
+   */
   private findPotentialDoorLocations(roomA: Room, roomB: Room, grid: Grid<CellType>): Point[] {
     if (!roomA.cells || !roomB.cells) return [];
     
     const wallsA = this.findRoomWalls(roomA, grid);
     const wallsB = this.findRoomWalls(roomB, grid);
     
+    // Find pairs of walls that are adjacent
     return wallsA.flatMap(wallA => 
       wallsB.filter(wallB => {
         const dx = Math.abs(wallA.x - wallB.x);
@@ -106,10 +116,17 @@ export class DoorGenerator {
     );
   }
 
+  /**
+   * Find wall cells for a room
+   * @param room Room to find walls for
+   * @param grid Dungeon grid
+   * @returns Array of wall cell positions
+   */
   private findRoomWalls(room: Room, grid: Grid<CellType>): Point[] {
     if (!room.cells) {
       if (!room.width || !room.height) return [];
       
+      // For rectangular rooms without explicit cells
       const walls: Point[] = [];
       const { x, y, width, height } = room;
       
@@ -124,16 +141,20 @@ export class DoorGenerator {
       return walls;
     }
     
-    return room.cells.filter(cell => 
-      [
+    // For rooms with explicit cells
+    return room.cells.filter(cell => {
+      // Check if this cell has at least one non-room neighbor
+      const adjacentCells = [
         { x: cell.x - 1, y: cell.y },
         { x: cell.x + 1, y: cell.y },
         { x: cell.x, y: cell.y - 1 },
         { x: cell.x, y: cell.y + 1 }
-      ].some(neighbor => 
+      ];
+      
+      return adjacentCells.some(neighbor => 
         grid.isInBounds(neighbor.x, neighbor.y) && 
         [CellType.EMPTY, CellType.WALL].includes(grid.get(neighbor.x, neighbor.y) ?? CellType.EMPTY)
-      )
-    );
+      );
+    });
   }
 }

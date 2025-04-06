@@ -159,16 +159,26 @@ export class CanvasRenderer {
     this.ctx.drawImage(tempCanvas, 0, 0);
   }
   
+  // Update the renderWalls method to handle custom room shapes
   private renderWalls(): void {
-    const wallLayer = this.layerManager.createWallLayer(
-      this.dungeon,
-      this.options.cellSize,
-      this.options.padding,
-      this.options.wallColor,
-      this.options.wallThickness
-    );
+    const { cellSize, padding, wallColor, wallThickness } = this.options;
     
-    this.ctx.drawImage(wallLayer, 0, 0);
+    this.ctx.strokeStyle = wallColor;
+    this.ctx.lineWidth = wallThickness;
+    this.ctx.lineCap = 'square';
+    
+    // Process each room
+    for (const room of this.dungeon.rooms) {
+      // Check if room has borderPoints (for circular, star, etc. rooms)
+      if (room.borderPoints && room.borderPoints.length > 0) {
+        this.renderCustomRoomWalls(room);
+      } else {
+        this.renderStandardRoomWalls(room);
+      }
+    }
+    
+    // Also render corridor walls
+    this.renderCorridorWalls();
   }
 
   private renderDoors(): void {
@@ -399,4 +409,138 @@ export class CanvasRenderer {
   exportToPNG(): string {
     return this.canvas.toDataURL('image/png');
   }
+
+  // Add this method to your CanvasRenderer class
+
+private renderRooms(): void {
+  // Render each room based on its type
+  for (const room of this.dungeon.rooms) {
+    this.renderRoom(room);
+  }
+}
+
+private renderRoom(room: Room): void {
+  const { cellSize, padding, floorColor } = this.options;
+  
+  // Render the room floor
+  this.ctx.fillStyle = floorColor;
+  
+  if (room.cells) {
+    // For rooms with explicit cell lists, render each cell
+    for (const cell of room.cells) {
+      const px = padding + cell.x * cellSize;
+      const py = padding + cell.y * cellSize;
+      this.ctx.fillRect(px, py, cellSize, cellSize);
+    }
+  } else if (room.width && room.height) {
+    // For rectangular rooms
+    const px = padding + room.x * cellSize;
+    const py = padding + room.y * cellSize;
+    this.ctx.fillRect(px, py, room.width * cellSize, room.height * cellSize);
+  }
+}
+
+private renderCustomRoomWalls(room: Room): void {
+  const { cellSize, padding, wallColor, wallThickness } = this.options;
+  
+  this.ctx.strokeStyle = wallColor;
+  this.ctx.lineWidth = wallThickness;
+  this.ctx.beginPath();
+  
+  // Draw connected line through all border points
+  if (!room.borderPoints || room.borderPoints.length === 0) return;
+  
+  const firstPoint = room.borderPoints[0];
+  const startX = padding + firstPoint.x * cellSize;
+  const startY = padding + firstPoint.y * cellSize;
+  this.ctx.moveTo(startX, startY);
+  
+  for (let i = 1; i < room.borderPoints.length; i++) {
+    const point = room.borderPoints[i];
+    const x = padding + point.x * cellSize;
+    const y = padding + point.y * cellSize;
+    this.ctx.lineTo(x, y);
+  }
+  
+  // Close the path back to the first point
+  this.ctx.closePath();
+  this.ctx.stroke();
+}
+
+private renderStandardRoomWalls(room: Room): void {
+  const { cellSize, padding, wallColor, wallThickness } = this.options;
+  
+  this.ctx.strokeStyle = wallColor;
+  this.ctx.lineWidth = wallThickness;
+  
+  if (room.cells) {
+    // For rooms with explicit cell lists, find the perimeter
+    this.renderCellBasedRoomWalls(room);
+  } else if (room.width && room.height) {
+    // For rectangular rooms
+    const px = padding + room.x * cellSize;
+    const py = padding + room.y * cellSize;
+    const width = room.width * cellSize;
+    const height = room.height * cellSize;
+    
+    this.ctx.strokeRect(px, py, width, height);
+  }
+}
+
+private renderCellBasedRoomWalls(room: Room): void {
+  if (!room.cells) return;
+  
+  const { cellSize, padding } = this.options;
+  const cellMap = new Map<string, Point>();
+  
+  // Create a map of all cells in the room
+  for (const cell of room.cells) {
+    cellMap.set(`${cell.x},${cell.y}`, cell);
+  }
+  
+  // Check each direction for each cell
+  for (const cell of room.cells) {
+    const directions = [
+      { dx: 0, dy: -1, edge: 'top' },
+      { dx: 1, dy: 0, edge: 'right' },
+      { dx: 0, dy: 1, edge: 'bottom' },
+      { dx: -1, dy: 0, edge: 'left' }
+    ];
+    
+    for (const { dx, dy, edge } of directions) {
+      const nx = cell.x + dx;
+      const ny = cell.y + dy;
+      const neighborKey = `${nx},${ny}`;
+      
+      // If neighbor cell is not part of the room, draw a wall
+      if (!cellMap.has(neighborKey)) {
+        const px = padding + cell.x * cellSize;
+        const py = padding + cell.y * cellSize;
+        
+        this.ctx.beginPath();
+        
+        if (edge === 'top') {
+          this.ctx.moveTo(px, py);
+          this.ctx.lineTo(px + cellSize, py);
+        } else if (edge === 'right') {
+          this.ctx.moveTo(px + cellSize, py);
+          this.ctx.lineTo(px + cellSize, py + cellSize);
+        } else if (edge === 'bottom') {
+          this.ctx.moveTo(px, py + cellSize);
+          this.ctx.lineTo(px + cellSize, py + cellSize);
+        } else if (edge === 'left') {
+          this.ctx.moveTo(px, py);
+          this.ctx.lineTo(px, py + cellSize);
+        }
+        
+        this.ctx.stroke();
+      }
+    }
+  }
+}
+
+private renderCorridorWalls(): void {
+  // Existing implementation...
+}
+
 }

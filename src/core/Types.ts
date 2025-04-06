@@ -21,7 +21,11 @@ export enum RoomType {
   RECTANGULAR = 'rectangular',
   CIRCULAR = 'circular',
   L_SHAPED = 'l-shaped',
-  CAVE = 'cave'
+  CAVE = 'cave',
+  STAR_SHAPED = 'star-shaped',
+  CROSS_SHAPED = 'cross-shaped',
+  NORTH_STAR_SHAPED = 'north-star-shaped',
+  OCTAGON_SHAPED = 'octagon-shaped'
 }
 
 export interface Point {
@@ -106,4 +110,36 @@ export interface LayerOptions {
   scale: number;
   color: string;
   visible: boolean;
+}
+// Add to your existing Types.ts file
+
+export interface DungeonParams {
+  width: number;
+  height: number;
+  numRooms: number;
+  roomDensity: number;
+  roomSizeVariation: number;
+  specialRoomChance: number;
+  corridorWidth: number;
+  createLoops: boolean;
+  loopChance: number;
+  featureDensity: number;
+  theme: string;
+  seed?: string | number;
+  hallwayStyle: 'straight' | 'bendy' | 'organic';
+  doorFrequency: number;
+  secretDoorChance: number;
+  roomTemplateWeights?: Record<string, number>;
+}
+
+export interface RoomTemplateParams {
+  minSize?: number;
+  maxSize?: number;
+  minWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  maxHeight?: number;
+  minRadius?: number;
+  maxRadius?: number;
+  [key: string]: any; // Allow for custom parameters
 }

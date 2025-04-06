@@ -16,7 +16,16 @@ export class DungeonParamsBuilder {
       theme: 'standard',
       hallwayStyle: 'bendy',
       doorFrequency: 0.8,
-      secretDoorChance: 0.1
+      secretDoorChance: 0.1,
+      roomTemplateWeights: {
+        'rectangular': 0.6,
+        'circular': 0.1,
+        'l-shaped': 0.08,
+        'star-shaped': 0.08,
+        'cross-shaped': 0.08,
+        'north-star-shaped': 0.06, // Add these new types
+        'octagon-shaped': 0.06     // Add these new types
+      }
     };
   }
 
@@ -35,7 +44,17 @@ export class DungeonParamsBuilder {
       roomSizeVariation: 0.8,
       specialRoomChance: 0.4,
       hallwayStyle: 'organic',
-      theme: 'cave'
+      theme: 'cave',
+      roomTemplateWeights: {
+        'rectangular': 0.3,
+        'circular': 0.2,
+        'l-shaped': 0.1,
+        'star-shaped': 0.1,
+        'cross-shaped': 0.05,
+        'north-star-shaped': 0.05,
+        'octagon-shaped': 0.1,
+        'cave': 0.3
+      }
     };
   }
 
@@ -47,17 +66,30 @@ export class DungeonParamsBuilder {
       roomSizeVariation: 0.3,
       createLoops: false,
       hallwayStyle: 'bendy',
-      theme: 'maze'
+      theme: 'maze',
+      roomTemplateWeights: {
+        'rectangular': 0.7,
+        'circular': 0.1,
+        'l-shaped': 0.1,
+        'octagon-shaped': 0.1
+      }
     };
   }
 
   static createLoopy(): DungeonParams {
     return {
       ...this.createDefault(),
-      createLoops: false,
-      loopChance: 0,
+      createLoops: true,
+      loopChance: 0.5,
       hallwayStyle: 'straight',
-      theme: 'loopy'
+      theme: 'loopy',
+      roomTemplateWeights: {
+        'rectangular': 0.5,
+        'circular': 0.2,
+        'cross-shaped': 0.1,
+        'star-shaped': 0.1,
+        'north-star-shaped': 0.1
+      }
     };
   }
 
@@ -68,7 +100,14 @@ export class DungeonParamsBuilder {
       featureDensity: 0.8,
       doorFrequency: 1.0,
       secretDoorChance: 0.2,
-      theme: 'temple'
+      theme: 'temple',
+      roomTemplateWeights: {
+        'rectangular': 0.3,
+        'circular': 0.2,
+        'cross-shaped': 0.2,
+        'star-shaped': 0.15,
+        'octagon-shaped': 0.15
+      }
     };
   }
 
@@ -107,6 +146,11 @@ export class DungeonParamsBuilder {
 
     // Validate corridor width
     normalized.corridorWidth = Math.max(1, Math.min(3, normalized.corridorWidth));
+
+    // Ensure room template weights are present
+    if (!normalized.roomTemplateWeights) {
+      normalized.roomTemplateWeights = defaults.roomTemplateWeights;
+    }
 
     return normalized;
   }
